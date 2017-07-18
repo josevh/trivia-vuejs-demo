@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="VueJs Blackjack">
+    <title>VueJS Trivia!</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="./app.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="app" class="container" v-cloak>
+        <div v-show="isLoading" class="loading" style="display: none;">
+            <span class="loader"></span>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 text-center">
+                <div class="page-header">
+                    <h2>Trivia!</h2>
+                </div>
+            </div>
+        </div>
+        <div v-if="!gameStarted" class="row">
+            <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3 text-center">
+                <button class="btn btn-primary" @click="startGame">Start</button>
+            </div>
+        </div>
+        <div v-else class="row">
+            <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3 text-center">
+                <div v-if="difficulty === ''" class="row">
+                    <div class="col-sm-12 text-center">
+                        <h3>Difficulty</h3>
+                        <div class="list-group">
+                            <button type="button" @click.self.prevent="selectDifficulty('any')" class="list-group-item">Any</button>
+                            <button type="button" @click.self.prevent="selectDifficulty('easy')" class="list-group-item">Easy</button>
+                            <button type="button" @click.self.prevent="selectDifficulty('medium')" class="list-group-item">Medium</button>
+                            <button type="button" @click.self.prevent="selectDifficulty('hard')" class="list-group-item">Hard</button>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="row">
+                    <div class="col-sm-12">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h4>Difficulty: <small>{{ difficulty | capitalize }}</small></h4>
+                            </div>
+                        </div>
+                         <div v-if="categorySelectedId.length === 0" class="row">
+                            <div class="col-sm-12 text-center">
+                                <h3>Categories</h3>
+                                <div class="list-group">
+                                    <button v-for="category in categories" class="list-group-item" type="button" @click.self.prevent="selectCategory(category.id)" class="list-group-item" href="#">{{ category.name }}<span v-show="category.questionCount > -1" class="badge pull-right">{{ category.questionCount }}</span></a>
+                                </div>
+                            </div>        
+                        </div>
+                        <div v-else class="row">
+                            <div class="col-sm-12">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <h4>Category: <small>{{ categorySelected.name }} {{ questions.length }}</small></h4>
+                                        <div v-if="roundOver">
+                                            <h4>Score: {{ roundScore }}</h4>
+                                            <div class="text-center">
+                                                <button @click.self.prevent="startNewRound" class="btn btn-primary">Play again</button>
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div v-for="(question, i) in questions" v-show="i + 1 === questionCurrentNumber || roundOver" class="question-container">
+                                            <h4>Question {{ i + 1 }}:</h4>
+                                            <div class="question"><p>{{ question.question }}</p></div>
+                                            <div class="list-group answers">
+                                                <button v-for="answer in question.shuffledAnswers" class="list-group-item answer" :class="{'list-group-item-success': question.selectedAnswer !== ''  && answer === question.correctAnswer, 'list-group-item-danger': answer !== question.correctAnswer && answer === question.selectedAnswer}" :style="{'font-weight': answer === question.selectedAnswer ? 'bold' : '' }" :disabled="question.selectedAnswer !== ''" @click.self.prevent="selectQuestionAnswer(question, answer)" type="button">{{ answer }}</button>
+                                            </div>
+                                        </div>    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <button @click.self.prevent="endGame" class="btn btn-danger">Quit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #app -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.3/vue.js"></script>
+    <script src="https://code.jquery.com/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="./app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,39 @@
+[v-cloak] {
+    display: none;
+}
+
+div.loading {
+    display: block;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #b1b1b1;
+    z-index: 9998;
+}
+
+.loading .loader {
+    margin: calc(50vh - 8px) 0 0 calc(50vw - 8px);
+    display: inline-block;
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border: 4px solid #0255b4;
+    border-top-color: #e9f3ff;
+    border-radius: 100%;
+    -webkit-animation: spin infinite 1s linear;
+    animation: spin infinite 1s linear;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

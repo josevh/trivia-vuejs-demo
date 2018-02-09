@@ -72,7 +72,7 @@
                                         </div>
                                         <hr>
                                         <div v-for="(question, i) in questions" v-show="i + 1 === questionCurrentNumber || roundOver" class="question-container">
-                                            <h4>Question {{ i + 1 }}:</h4>
+                                            <h4>Question {{ i + 1 }} of {{ questions.length }}:</h4>
                                             <div class="question"><p>{{ question.question }}</p></div>
                                             <div class="list-group answers">
                                                 <button v-for="answer in question.shuffledAnswers" class="list-group-item answer" :class="{'list-group-item-success': question.selectedAnswer !== ''  && answer === question.correctAnswer, 'list-group-item-danger': answer !== question.correctAnswer && answer === question.selectedAnswer}" :style="{'font-weight': answer === question.selectedAnswer ? 'bold' : '' }" :disabled="question.selectedAnswer !== ''" @click.self.prevent="selectQuestionAnswer(question, answer)" type="button">{{ answer }}</button>

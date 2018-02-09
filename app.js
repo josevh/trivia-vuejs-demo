@@ -1,4 +1,4 @@
-(function() {
+(function () {
     var apiUrl = "https://opentdb.com/";
 
     var app = new Vue({
@@ -11,32 +11,34 @@
             categorySelectedId: "",
             questions: [],
             questionCurrentId: "",
+            questionsAmount: 10,
             difficulty: "",
             questionCurrentNumber: 1
         },
         computed: {
-            categorySelected: function() {
-                return $.grep(app.categories, function(e) {
-                    return e.id === app.categorySelectedId
+            categorySelected: function () {
+                return $.grep(app.categories, function (e) {
+                    return e.id === app.categorySelectedId;
+                    ;
                 })[0];
             },
-            roundScore: function() {
-                return app.questions.reduce(function(sum, question){
+            roundScore: function () {
+                return app.questions.reduce(function (sum, question) {
                     return sum + (question.selectedAnswer === question.correctAnswer ? 1 : 0);
                 }, 0);
             },
-            roundOver: function() {
+            roundOver: function () {
                 return app.questionCurrentNumber > app.questions.length;
             }
         },
         methods: {
-            startGame: function() {
+            startGame: function () {
                 app.gameStarted = true;
-                app.apiTokenRequest(function() {
+                app.apiTokenRequest(function () {
                     app.apiCategoriesRequest();
                 });
             },
-            apiCategoriesRequest: function() {
+            apiCategoriesRequest: function () {
                 var endpoint = "api_category.php";
                 var url = apiUrl + endpoint;
 
@@ -47,40 +49,37 @@
                     type: 'GET',
                     tryCount: 0,
                     retryLimit: 3,
-                    success: function(data) {
-                        data.trivia_categories.forEach(function(category) {
+                    success: function (data) {
+                        data.trivia_categories.forEach(function (category) {
                             app.categories.push({
                                 id: category.id,
                                 name: category.name,
                                 questionCount: -1
                             });
-                            setTimeout(function() {
+                            setTimeout(function () {
                                 app.apiCategoryQuestionCountRequest(category.id);
                             }, 500);
                         });
                         app.isLoading = false;
                     },
-                    error: function() {
+                    error: function () {
                         if (app.categories.length === 0 && this.tryCount < this.retryLimit) {
                             this.tryCount++;
                             $.ajax(this);
-                            return;
-                        }
-                        else {
-                            throw ('FATAL: categories');
+                        } else {
                             app.isLoading = false;
+                            throw 'FATAL: categories';
                         }
                     }
                 });
             },
-            apiCategoryQuestionCountRequest: function(categoryId) {
-                // api_count.php?category=
+            apiCategoryQuestionCountRequest: function (categoryId) {
                 var endpoint = "api_count.php?";
                 var params = "category=" + categoryId;
                 var url = apiUrl + endpoint + params;
 
-                var category = $.grep(app.categories, function(e) {
-                    return e.id === categoryId
+                var category = $.grep(app.categories, function (e) {
+                    return e.id === categoryId;
                 })[0];
                 var index = app.categories.indexOf(category);
 
@@ -89,7 +88,7 @@
                     type: 'GET',
                     // tryCount: 0,
                     // retryLimit: 3,
-                    success: function(data) {
+                    success: function (data) {
                         var questionCount = '';
                         switch (app.difficulty) {
                             case 'hard':
@@ -106,13 +105,13 @@
                         }
                         app.categories[index].questionCount = questionCount;
                     },
-                    error: function() {
-                        console.log('err');
+                    error: function () {
                         // TODO: not fatal
+                        console.log('err');
                     }
-                })
+                });
             },
-            apiTokenRequest: function(callback) {
+            apiTokenRequest: function (callback) {
                 var endpoint = "api_token.php?";
                 var params = "command=request";
                 var url = apiUrl + endpoint + params;
@@ -124,29 +123,27 @@
                     type: 'GET',
                     tryCount: 0,
                     retryLimit: 3,
-                    success: function(data) {
+                    success: function (data) {
                         if (data.response_code === 0) {
                             app.apiToken = data.token;
                             callback();
                         }
                         app.isLoading = false;
                     },
-                    error: function() {
+                    error: function () {
                         if (app.apiToken.length === 0 && this.tryCount < this.retryLimit) {
                             this.tryCount++;
                             $.ajax(this);
-                            return;
-                        }
-                        else {
-                            throw ('FATAL: token');
+                        } else {
                             app.isLoading = false;
+                            throw 'FATAL: token';
                         }
                     }
                 });
             },
-            apiQuestionsRequest: function(categoryId) {
+            apiQuestionsRequest: function (categoryId) {
                 var endpoint = "api.php?";
-                var params = "amount=10&encode=url3986&category=" + categoryId;
+                var params = "amount=" + this.questionsAmount + "&encode=url3986&category=" + categoryId;
                 if (app.difficulty !== 'any') {
                     params += '&difficulty=' + app.difficulty;
                 }
@@ -159,9 +156,9 @@
                     type: 'GET',
                     tryCount: 0,
                     retryLimit: 3,
-                    success: function(data) {
+                    success: function (data) {
                         if (data.response_code === 0) {
-                            data.results.forEach(function(elem) {
+                            data.results.forEach(function (elem) {
                                 app.questions.push({
                                     category: elem.category,
                                     type: elem.type,
@@ -176,25 +173,23 @@
                             app.isLoading = false;
                         }
                     },
-                    error: function() {
+                    error: function () {
                         if (app.questions.length === 0 && this.tryCount < this.retryLimit) {
                             this.tryCount++;
                             $.ajax(this);
-                            return;
-                        }
-                        else {
-                            throw ('FATAL: questions');
+                        } else {
+                            throw 'FATAL: questions';
                             app.isLoading = false;
                         }
                     }
                 });
             },
-            selectCategory: function(categoryId) {
+            selectCategory: function (categoryId) {
                 app.categorySelectedId = categoryId;
                 app.apiQuestionsRequest(app.categorySelectedId);
             },
             // @credit https://git.daplie.com/Daplie/knuth-shuffle/blob/master/index.js
-            shuffleArray: function(array) {
+            shuffleArray: function (array) {
                 var currentIndex = array.length,
                     temporaryValue, randomIndex;
 
@@ -213,36 +208,36 @@
 
                 return array;
             },
-            selectDifficulty: function(difficulty) {
+            selectDifficulty: function (difficulty) {
                 app.difficulty = difficulty;
             },
-            selectQuestionAnswer: function(question, answer) {
+            selectQuestionAnswer: function (question, answer) {
                 var index = app.questions.indexOf(question);
                 app.questions[index].selectedAnswer = answer;
-                
+
                 app.questionCurrentNumber++;
             },
-            startNewRound: function() {
+            startNewRound: function () {
                 app.categorySelectedId = "";
                 app.questionCurrentId = "";
                 app.questions = [];
                 app.questionCurrentNumber = 1;
                 app.difficulty = "";
-                
+
             },
-            endGame: function() {
+            endGame: function () {
                 app.startNewRound();
                 app.gameStarted = false;
             },
-            urlDecode: function(str) {
-                return decodeURIComponent((str + '').replace(/\+/g, '%20'));
+            urlDecode: function (str) {
+                return decodeURIComponent((str.toString()).replace(/\+/g, '%20'));
             }
         },
         filters: {
-            capitalize: function(value) {
-                if (!value && value !== 0) return ''
-                value = value.toString()
-                return value.charAt(0).toUpperCase() + value.slice(1)
+            capitalize: function (value) {
+                value = value.toString();
+                if (value.length === 0) return '';
+                return value.charAt(0).toUpperCase() + value.slice(1);
             }
         }
     });
